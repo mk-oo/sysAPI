@@ -1,1 +1,1 @@
-web: gunicorn <sysAPI.py>:<app></app>
+web: gunicorn <sysAPI>:<app>
