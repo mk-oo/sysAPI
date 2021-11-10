@@ -1,1 +1,1 @@
-worker: python sysAPI.py
+web: gunicorn <sysAPI>:<app>
