@@ -89,6 +89,7 @@ def generateOTP(codeData):
 data =  [
 ]
 
+
 # route that admin will send in it user_id 
 @app.route('/', methods=['GET'])
 def success():
