@@ -102,9 +102,8 @@ def success():
         'id': user,
         'OTP':otp
             }
-        data.append(newdata)
 
-        return jsonify(data)
+        return jsonify(newdata)
 
 
     
