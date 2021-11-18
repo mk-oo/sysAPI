@@ -162,7 +162,7 @@ def success():
 @app.route('/success/userOTP',methods= ['GET'])
 def otp():
 
-    return jsonify(data[-1]) 
+    return data[-1]['OTP'] 
 
 
 
