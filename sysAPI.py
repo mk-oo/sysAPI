@@ -155,7 +155,7 @@ def success():
             }
         data.append(obj)
 
-        return jsonify(data)
+        return data[-1]['OTP'] 
 
 
     
