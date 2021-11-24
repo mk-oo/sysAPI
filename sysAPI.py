@@ -21,8 +21,6 @@ def divideUsercode(codeData, codelist, codecounter):
         codecounter += 1
     return codelist
 
-
-
 # function to get current timestamp
 def getDateandTime():
     now = datetime.now()
@@ -30,8 +28,6 @@ def getDateandTime():
     result = int(datetime.timestamp(now))
     result = str(result)
     return result
-
-
 
 # Function we send to it user_id and get it's corresonding OTP  
 def generateOTP(codeData):
@@ -45,27 +41,6 @@ def generateOTP(codeData):
 
     # store the listed user_id after being divided  
     codeToBehex = divideUsercode(codeData, codelist, codecounter)
-
-    #***************************************************************
-
-    
-    # get timestamp of the current date and time
-    dt = getDateandTime()
-    
-    #subtract current timestamp from (1609452000) which is the timestamp of (1/1/2021)
-    dt = int(dt) - 1609452000
-    dt = str(dt)
-    lastTwoNumbers = dt[-2:]
-    print('date before trunacte last 2 numbers:  ', dt)
-    print('the last 2 numbers are: ',lastTwoNumbers)
-
-    #neglict the last 2 numbers after subtraction from (1609452000) 
-    #and convert the result to hexa
-    dt = int(dt[:-2])
-    print('date after trunacte last 2 numbers:  ', dt)
-
-    #***************************************************************
-
 
     #to store the summation of the user_id after being listed  
     codeStore = 0
@@ -87,6 +62,8 @@ def generateOTP(codeData):
 
     # neglict the first 2 digits which are = 0x , beacause the conversion to hexa
     hexCode = hexCode[2:]
+
+    # we need to ensure that the usercode's length is 3 not less than 3 
     if len(hexCode) == 2:
         hexCode = '0'+hexCode 
     if len(hexCode) == 1:
@@ -96,9 +73,31 @@ def generateOTP(codeData):
     # now hexCode contain the summation of every 2's in user_id into hexadecimal 
     # hexCode length will never be more than 3 digits or characters 
 
+    
+    # get timestamp of the current date and time
+    dt = getDateandTime()
+    
+    #subtract current timestamp from (1609452000) which is the timestamp of (1/1/2021)
+    dt = int(dt) - 1609452000
+    dt = str(dt)
+
+    
+    lastTwoNumbers = dt[-2:]
+    print('date before trunacte last 2 numbers:  ', dt)
+    print('the last 2 numbers are: ',lastTwoNumbers)
+
+    #neglict the last 2 numbers after subtraction from (1609452000) 
+    #and convert the result to hexa
 
 
-    OTP = hex(dt)
+    dt = int(dt[:-2])
+    newdate = algorithmToChangeOTP(dt)
+
+    print('timestamp after the new algorithm:  ',newdate)
+
+
+
+    OTP = hex(newdate)
 
     #neglict 0x which are the first 2 digits after converting the resulting date to hexa 
     # concatenate it to hexCode which contains the summation of every 2's in user_id into 
@@ -108,11 +107,19 @@ def generateOTP(codeData):
     # the OTP length won't be more than 8 digits or characters
     return OTP
 
+#new algorithm to make the timestamp from 123451 =>  112345 (every 1.6 min )
+# the second 1.6 min the num will be  from 123452 => 212345 
+def algorithmToChangeOTP(newdate):
 
+    newdate = str(newdate)
+    newdate = newdate[-1] + newdate[:-1]
+    print('date To be converted:  ',newdate)
 
+    return int(newdate)
 # this for change the OTP every new user
 # this won't work for changing the OTP if the same user is entered
 def shuffleForNewUser(result):
+    print('OTP before manipulation:  ',result)
     ptTime= result[0:3]
     mid = result[3:5]
     ptUser = result[-3:]
@@ -123,9 +130,9 @@ def shuffleForNewUser(result):
     r= r[2:]
 
     data = str(r+mid+ptUser)
-    data = list(data)
 
-    print('before shuffling:  ',data)
+
+    print('before shuffling :  ',data)
    
 
     #first shuffle  6  0  1  4  2  5  3  7
@@ -139,10 +146,13 @@ def shuffleForNewUser(result):
   
     return newData
 
+
+
+
 data = []
 
 # route that admin will send in it user_id 
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET','POST'])
 def success():
 
         user = request.args.get('id')
@@ -155,19 +165,10 @@ def success():
             }
         data.append(obj)
 
-        return data[-1]['OTP'] 
+        return data[-1]['OTP']
 
 
     
-@app.route('/success/userOTP',methods= ['GET'])
-def otp():
-
-    return data[-1]['OTP'] 
-
-
-
-
-
 
 # Run the application
 if __name__ == '__main__':
